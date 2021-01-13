@@ -1,1 +1,2 @@
-# skelbimai-frontend
+Group project
+Ads web page
