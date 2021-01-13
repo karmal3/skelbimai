@@ -1,0 +1,122 @@
+﻿@model IEnumerable<Frontend.Models.Country>
+@{
+    ViewData["Title"] = "Register";
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/login.css">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="~/css/Error.css">
+    <script>
+        window.onload = function () {
+            if (sessionStorage.getItem('Message')) {
+                document.getElementById('Message').hidden = false;
+                sessionStorage.removeItem('Message');
+            }
+        }
+        function MessageFunction() {
+            sessionStorage.setItem('Message', true);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div hidden id="Message">
+            <div class="d-flex justify-content-center">
+                <div class="row">
+                    <div class="col">
+                        <div class="msg msg-danger text-center">@TempData["Message"]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <div class="card card-signin my-5">
+                    <div class="card-body" style="box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 1);">
+                        <h5 class="card-title text-center">Sign Up</h5>
+                        <form class="form-signin">
+                            <div class="form-label-group">
+                                <input type="text" id="inputUsername" name="username" class="form-control" placeholder="Username" required autofocus maxlength="20" pattern="[A-Za-z0-9]{6,}" title="Six or more, non symbol or number, characters">
+                                <label for="inputUsername">Username</label>
+                            </div>
+
+                            <div class="form-label-group">
+                                <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email address" required autofocus maxlength="30">
+                                <label for="inputEmail">Email address</label>
+                            </div>
+
+                            <div class="form-label-group">
+                                <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" onkeyup='check();' required>
+                                <label for="inputPassword">Password</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="password" id="reenterPassword" class="form-control" placeholder="Re-enter password" onkeyup='check();' required>
+                                <label for="reenterPassword">Re-Enter Password</label>
+                                <span id='message'></span>
+                            </div>
+                            <div class="form-label-group">
+                                <select required id="inputCountry" class="form-control" name="Country">
+                                    <option selected value="">Cities</option>
+                                    @if (Model != null)
+                                    {
+                                        @foreach (var cities in Model)
+                                        {
+                                            <option value="@cities.Id">@cities.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <p>
+                                <a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Optional</a>
+                            </p>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="collapse multi-collapse" id="multiCollapseExample1">
+                                        <div class="form-row">
+                                            <div class="form-label-group col-md-6">
+                                                <input type="text" class="form-control" id="inputFirstname" name="FirstName" placeholder="First name" maxlength="20" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                <label for="inputFirstname">First name</label>
+                                            </div>
+                                            <div class="form-label-group col-md-6">
+                                                <input type="text" class="form-control" id="inputLastname" placeholder="Last name" name="LastName" maxlength="30" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                <label for="inputLastname">Last name</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-label-group">
+                                            <input type="text" class="form-control" id="inputPhone" placeholder="PhoneNumber" name="PhoneNumber" pattern="[+0-9][0-9]{8,11}" title="+370 or 86 type numbers with 12 or 9 length">
+                                            <label for="inputPhone">Phone number</label>
+                                        </div>
+                                        <div class="form-label-group">
+                                            <input type="text" class="form-control" id="inputAddress" placeholder="Address" name="Address" maxlength="40" pattern="^[a-z\d\.]{,40}$" title="No special characters allowed">
+                                            <label for="inputAddress">Address</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" value="Sign up" onclick="MessageFunction()" formaction="@Url.Action("RegisterUser")" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var check = function () {
+            if (document.getElementById('inputPassword').value ==
+                document.getElementById('reenterPassword').value) {
+                document.getElementById('message').style.color = 'green';
+                document.getElementById('message').innerHTML = 'matching';
+            } else {
+                document.getElementById('message').style.color = 'red';
+                document.getElementById('message').innerHTML = 'not matching';
+            }
+        }
+    </script>
+</body>
+</html>

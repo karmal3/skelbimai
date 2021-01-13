@@ -1,0 +1,486 @@
+﻿@model IEnumerable<Frontend.Models.Skelbimas>
+@{
+    ViewData["Title"] = "Home Page";
+    if (TempData["Role"] != null)
+    {
+        switch (TempData["Role"].ToString())
+        {
+            case "1":
+                Layout = "_UserLayout";
+                break;
+            case "2":
+                Layout = "_AdminLayout";
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        // Filter table rows based on searched term
+        $("#search").on("keyup", function () {
+            var term = $(this).val().toLowerCase();
+            console.log(term);
+            $("ul li").each(function () {
+                $row = $(this);
+                var name = $row.find("div:nth-child(1)").text().toLowerCase();
+                console.log(name);
+                if (name.search(term) < 0) {
+                    $row.hide();
+                } else {
+                    $row.show();
+                }
+            });
+        });
+
+    });
+</script>
+<script>
+    /*
+    The solution below is a way to fix the percentages being off
+    in iOs and Android devices and even browsers. It's also scalable
+    because you can change the font-size of the stars and the width
+    will adjust accordingly. This is the only way I found you could do
+    unicode and CSS percentages for ratings.
+  */
+
+    $(document).ready(function () {
+        // Gets the span width of the filled-ratings span
+        // this will be the same for each rating
+        var star_rating_width = $('.fill-ratings span').width();
+        // Sets the container of the ratings to span width
+        // thus the percentages in mobile will never be wrong
+        $('.star-ratings').width(star_rating_width);
+    });
+</script>
+<script>
+    window.onload = function () {
+        $.ajax({
+            type: 'POST',
+            dataType: 'JSON',
+            url: '/home/index2',
+            data: {},
+            success: function (data) {
+                //location.href = '/forum/discussion?id=' + id
+                //if (response.status == "Added") {
+                //    location.href = '/forum/discussion?id=' + id
+                //}
+                data.forEach(myFunction)
+
+                function myFunction(item) {
+                    starrating(item.id, item.rating)
+                }
+            },
+            error: function () {
+                //location.href = '/forum/discussion?id=' + id
+                // add error message or smth
+                alert(data);
+            }
+        });
+
+        $(document).ready(function () {
+            var Username;
+            if (sessionStorage.getItem("Username") != null) {
+                Username = sessionStorage.getItem("Username");
+            }
+            else {
+                Username = "@TempData["Username"]";
+            }
+            var Role = '@TempData["Role"]';
+            if (Boolean(@((TempData["Username"] != null).ToString().ToLower())) == true) {
+
+                // Store
+                sessionStorage.setItem("Username", Username);
+                sessionStorage.setItem("Role", Role);
+
+                // Retrieve
+                document.getElementById("username").innerHTML = Username;
+            }
+        });
+    }
+</script>
+<style>
+    .rating {
+        display: flex;
+        width: 100%;
+        overflow: hidden;
+        flex-direction: row-reverse;
+        position: relative;
+    }
+
+    .rating-0 {
+        filter: grayscale(100%);
+    }
+
+    .rating > input {
+        display: none;
+    }
+
+    .rating > label {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        margin-top: auto;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23e3e3e3' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 76%;
+        transition: .3s;
+    }
+
+    .rating > input:checked ~ label,
+    .rating > input:checked ~ label ~ label {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23fcd93a' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e");
+    }
+
+
+    .rating > input:not(:checked) ~ label:hover,
+    .rating > input:not(:checked) ~ label:hover ~ label {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23d8b11e' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e");
+    }
+</style>
+<style>
+    .star-ratings {
+        unicode-bidi: bidi-override;
+        color: #ccc;
+        font-size: 20px;
+        position: relative;
+        margin: 0;
+        padding: 0;
+    }
+    .fill-ratings {
+        color: #e7711b;
+        padding: 0;
+        position: absolute;
+        z-index: 1;
+        display: block;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+    }
+    span {
+      display: inline-block;
+    }
+  
+  .empty-ratings {
+    padding: 0;
+    display: block;
+    z-index: 0;
+  }
+
+ 
+</style>
+<style>
+
+    .form-control:focus {
+        box-shadow: none;
+    }
+
+    .form-control-underlined {
+        border-width: 0;
+        border-bottom-width: 1px;
+        border-radius: 0;
+        padding-left: 0;
+    }
+
+
+
+    .form-control::placeholder {
+        font-size: 0.95rem;
+        color: #aaa;
+        font-style: italic;
+    }
+
+    .bootstrap-select .bs-ok-default::after {
+        width: 0.3em;
+        height: 0.6em;
+        border-width: 0 0.1em 0.1em 0;
+        transform: rotate(45deg) translateY(0.5rem);
+    }
+
+    .btn.dropdown-toggle:focus {
+        outline: none !important;
+    }
+</style>
+
+
+<!-- Search form -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
+              crossorigin="anonymous"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" />
+    </environment>
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+    <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+
+
+<body>
+
+    <div class="container" style="">
+        <div class="row mb-3">
+            <div class="col-lg-8 mx-auto mb-3 ">
+                <!-- Custom rounded search bars with input group -->
+
+                <div class="p-1 bg-light rounded rounded-pill shadow-sm mb-4">
+                    <div class="input-group">
+                        <!--CATEGORY BUTTON-->
+
+                        <button type="button" class="btn btn-primary rounded rounded-pill shadow-sm border-0" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="true" aria-controls="multiCollapseExample1"><span class="label-icon">Filter</span> <span class="caret">&nbsp;</span></button>
+                        <div class="dropdown-menu dropdown-menu-md-left rounded rounded-sm bg-light border-0">
+
+                        </div>
+
+                        <!----------------------------------->
+                        <input type="search" id="search" placeholder="What're you searching for?" aria-describedby="button-addon1" class="form-control border-0 bg-transparent">
+                        <div class="input-group-btn">
+                            <div class="input-group-append">
+                                <button id="button-addon1" type="submit" class="btn btn-link text-primary"><i class="fa fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- End -->
+            </div>
+        </div>
+
+
+    </div>
+    <div class="container mb-4" id="myGroup">
+        <form>
+
+            <div class="collapse" id="multiCollapseExample1" data-parent="#myGroup">
+                <div class="row">
+                    <div class="container">
+                        <div class="card">
+
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <article class="card-group-item border">
+                                        <header class="card-header">
+                                            <h6 class="title">Category </h6>
+                                        </header>
+                                        <div class="filter-content">
+
+                                            <div class="card-body overflow-auto" style="height: 200px;">
+                                                @foreach (var category in ViewBag.categories)
+                                                {
+                                                    <div class="custom-control custom-checkbox">
+                                                        <span class="float-right badge badge-light round">@category.AdsCount</span>
+                                                        <input type="checkbox" class="custom-control-input" name="id" value="@category.Id" id="@category.Id">
+                                                        <label class="custom-control-label" for="@category.Id">@category.Name</label>
+                                                    </div> <!-- form-check.// -->
+                                                }
+
+
+
+                                            </div> <!-- card-body.// -->
+
+                                        </div>
+
+                                    </article> <!-- card-group-item.// -->
+                                </div>
+                                <div class="col-sm-3">
+                                    <article class="card-group-item border">
+                                        <header class="card-header">
+                                            <h6 class="title">Price </h6>
+                                        </header>
+                                        <div class="filter-content">
+                                            <div class="card-body">
+                                                <div class="form-row">
+                                                    <div class="form-group col-md-6">
+                                                        <label>Min</label>
+                                                        <input type="number" class="form-control" name="minprice" id="inputEmail4" placeholder="0€">
+                                                    </div>
+                                                    <div class="form-group col-md-6 text-right">
+                                                        <label>Max</label>
+                                                        <input type="number" class="form-control" name="maxprice" placeholder="5000€">
+                                                    </div>
+                                                </div>
+                                            </div> <!-- card-body.// -->
+                                        </div>
+                                    </article> <!-- card-group-item.// -->
+                                    <article class="card-group-item border">
+
+                                        <div class="filter-content">
+                                            <div class="card-body">
+                                                <div class="form-row">
+                                                    <select required class="bg-primary custom-select bg-light col-sm-auto" name="priceorder">
+                                                        <option selected value="0">None</option>
+                                                        <option value="1">Cheapest at top</option>
+                                                        <option value="2">Expensive at top</option>
+                                                    </select>
+                                                </div>
+                                            </div> <!-- card-body.// -->
+                                        </div>
+                                    </article> <!-- card-group-item.// -->
+                                </div>
+                                <div class="col-sm-3">
+
+
+                                    <article class="card-group-item border">
+                                        <header class="card-header">
+                                            <h6 class="title">Date </h6>
+                                        </header>
+                                        <div class="filter-content">
+                                            <div class="card-body">
+                                                <div class="form-row">
+                                                    <select required class="bg-primary custom-select bg-light col-sm-auto" name="date">
+                                                        <option selected value="1">Newest</option>
+                                                        <option value="2">Oldest</option>
+                                                    </select>
+                                                </div>
+                                            </div> <!-- card-body.// -->
+                                        </div>
+                                    </article> <!-- card-group-item.// -->
+
+
+                                </div>
+
+                                <div class="col-sm-3">
+                                    <article class="card-group-item border">
+                                        <header class="card-header">
+                                            <h6 class="title">Ad rating </h6>
+                                        </header>
+                                        <div class="filter-content">
+                                            <div class="card-body">
+                                                <div class="form-row">
+                                                    <select required class="bg-primary custom-select bg-light col-sm-auto"  name="rating">
+                                                        <option style="color:#808080;" value="-1">&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+                                                        <option style='color:#ffbb33;'value="5">&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+                                                        <option style='color:#ffbb33' value="4">&#9733;&#9733;&#9733;&#9733;</option>
+                                                        <option style='color:#ffbb33'value="3">&#9733;&#9733;&#9733;</option>
+                                                        <option style='color:#ffbb33'value="2">&#9733;&#9733;</option>
+                                                        <option style='color:#ffbb33'value="1">&#9733;</option>
+                                                    </select>
+                                                </div>
+                                            </div> <!-- card-body.// -->
+                                        </div>
+                                    </article> <!-- card-group-item.// -->
+                                </div>
+
+                            </div>
+                            <hr>
+                            <div class="col d-flex justify-content-end mb-3">
+                                <input class="btn btn-primary" type="submit" value="Save Changes"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="container py-0 ">
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+
+                <!-- List group-->
+                <ul class="list-group shadow">
+                    @if (Model != null)
+                    {
+                        @foreach (var skelbimas in Model)
+                        {
+                            <!-- list group item-->
+                            <li class="list-group-item">
+                                <!-- Custom content-->
+                                <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+                                    <div class="media-body order-2 order-lg-1">
+                                        <a onclick="ViewCount(@skelbimas.Id, event)" href="/ads/addetail?id=@skelbimas.Id"><h5 class="mt-0 font-weight-bold mb-2">@skelbimas.Title</h5></a>
+                                        <p class="font-italic text-muted mb-0 small">@skelbimas.Description</p>
+                                        <div class="d-flex align-items-center justify-content-between mt-1">
+                                            <h6 class="font-weight-bold my-2">@skelbimas.Price</h6>
+                                           
+                                            <div class="star-ratings">
+                                                <div id="rating_@skelbimas.Id" onloadedmetadata="starrating(@skelbimas.Id)" class="fill-ratings" color:#ffbb33;">
+                                                    <!--Spalvinasi per style (Yra virsuj scriptas) -->
+                                                    <span>★★★★★</span>
+                                                </div>
+                                                <div class="empty-ratings">
+                                                    <span>★★★★★</span>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    @if (skelbimas.Picture == null)
+                                    {
+                                        <img src="~/ads/image-missing.png" alt="Generic placeholder image" onerror="this.onerror=null;this.src='/ads/image-missing.png'" ;" width="200" class="ml-lg-5 order-1 order-lg-2">
+                                    }
+                                    else
+                                    {
+                                        <img src="@skelbimas.Picture" alt="Generic placeholder image" onerror="this.onerror=null;this.src='/ads/image-missing.png'" ;" width="200" class="ml-lg-5 order-1 order-lg-2">
+                                    }
+                                </div>
+                                <!-- End -->
+                            </li>
+                        }
+                    }
+                </ul>
+                <!-- End -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function starrating(id, rating) {
+            var score = rating * 100 / 5;
+            if (document.getElementById("rating_" + id) !== null)
+                document.getElementById("rating_" + id).style.width = String(score) + "%";
+        }
+
+        var oneTimeUse = true;
+        function ViewCount(id, e) {
+
+            if (oneTimeUse) {
+                location.href = '/ads/addetail?id=' + id
+                oneTimeUse = false;
+                $.ajax({
+                    type: 'POST',
+                    url: '/ads/AdViewCounter',
+                    data: { 'id': id },
+                    success: function (response) {
+                        //location.href = '/forum/discussion?id=' + id
+                        //if (response.status == "Added") {
+                        //    location.href = '/forum/discussion?id=' + id
+                        //}
+                    },
+                    error: function () {
+                        //location.href = '/forum/discussion?id=' + id
+                        // add error message or smth
+                    }
+                });
+            }
+            e.preventDefault();
+        }
+    </script>
+
+
+</body>
+</html>

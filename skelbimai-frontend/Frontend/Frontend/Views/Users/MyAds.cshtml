@@ -1,0 +1,135 @@
+﻿@model IEnumerable<Frontend.Models.Skelbimas>
+@{
+    ViewData["Title"] = "MyAds";
+    if (TempData["Role"] != null)
+    {
+        switch (TempData["Role"].ToString())
+        {
+            case "1":
+                Layout = "_UserLayout";
+                break;
+            case "2":
+                Layout = "_AdminLayout";
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/forum.css">
+    <link rel="stylesheet" href="~/css/site.css">
+    <!--ICON LIBRARY-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        .text-gray {
+            color: #aaa;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+        }
+
+        .form-control-underlined {
+            border-width: 0;
+            border-bottom-width: 1px;
+            border-radius: 0;
+            padding-left: 0;
+        }
+
+
+
+        .form-control::placeholder {
+            font-size: 0.95rem;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .bootstrap-select .bs-ok-default::after {
+            width: 0.3em;
+            height: 0.6em;
+            border-width: 0 0.1em 0.1em 0;
+            transform: rotate(45deg) translateY(0.5rem);
+        }
+
+        .btn.dropdown-toggle:focus {
+            outline: none !important;
+        }
+
+        .fa {
+            font-size: 1.2em;
+        }
+
+        .fa-thumbs-down, .fa-thumbs-o-down {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+
+<body>
+    @foreach (var skelbimas in Model)
+    {
+        <form>
+            <div class="container py-0">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <!-- List group-->
+                        <ul class="list-group shadow">
+                            <!-- list group item-->
+                            <li class="list-group-item">
+                                <!-- Custom content-->
+                                <div class="media align-items-lg-center flex-column flex-lg-row p-3">
+                                    <div class="media-body order-2 order-lg-1">
+                                        <a href="/ads/addetail?id=@skelbimas.Id"><h5 class="mt-0 font-weight-bold mb-2">@skelbimas.Title</h5></a>
+                                        <p class="font-italic text-muted mb-0 small">@skelbimas.Description</p>
+                                        <div class="d-flex align-items-center justify-content-between mt-1">
+                                            <h6 class="font-weight-bold my-2">@skelbimas.Price</h6>
+                                            <ul class="list-inline small">
+                                                <li class="list-inline-item m-0"><i class="fa fa-star text-success"></i></li>
+                                                <li class="list-inline-item m-0"><i class="fa fa-star text-success"></i></li>
+                                                <li class="list-inline-item m-0"><i class="fa fa-star text-success"></i></li>
+                                                <li class="list-inline-item m-0"><i class="fa fa-star text-success"></i></li>
+                                                <li class="list-inline-item m-0"><i class="fa fa-star-o text-gray"></i></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    @if (skelbimas.Picture == null)
+                                    {
+                                        <img src="~/ads/image-missing.png" alt="Generic placeholder image" onerror="this.onerror=null;this.src='/ads/image-missing.png'" ;" width="200" class="ml-lg-5 order-1 order-lg-2">
+                                    }
+                                    else
+                                    {
+                                        <img src="@skelbimas.Picture" alt="Generic placeholder image" onerror="this.onerror=null;this.src='/ads/image-missing.png'" ;" width="200" class="ml-lg-5 order-1 order-lg-2">
+                                    }
+                                </div>
+                                <button class="btn" formaction="@Url.Action("EditAdForm", "Ads", skelbimas)"><i class="fa fa-pencil"></i></button>
+                                <button class="btn" onclick="deleteConfirm()" formaction="@Url.Action("DeleteAd", "Ads", skelbimas)"><i class="fa fa-trash"></i></button>
+                                <!-- End -->
+                            </li>
+                            <!-- End -->
+                        </ul>
+                        <!-- End -->
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+    <script>
+        function deleteConfirm() {
+            var r = confirm("Do you really want to delete this ad?");
+            if (r) {
+            }
+            else {
+                this.event.preventDefault();
+            }
+        }
+    </script>
+</body>
+</html>

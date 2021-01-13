@@ -1,0 +1,654 @@
+﻿@model IEnumerable<Frontend.Models.ForumComments>
+@{
+    ViewData["Title"] = "TopicInfo";
+    if (TempData["Role"] != null)
+    {
+        switch (TempData["Role"].ToString())
+        {
+            case "1":
+                Layout = "_UserLayout";
+                break;
+            case "2":
+                Layout = "_AdminLayout";
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/css/login.css">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="~/css/Error.css">
+    <style>
+
+        .white-bg {
+            background-color: #ffffff;
+        }
+
+        .page-heading {
+            border-top: 0;
+            padding: 0 10px 20px 10px;
+        }
+
+        .forum-post-container .media {
+            margin: 10px 10px 10px 10px;
+            padding: 20px 10px 20px 10px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .forum-avatar {
+            float: left;
+            margin-right: 20px;
+            text-align: center;
+            width: 110px;
+        }
+
+            .forum-avatar .img-circle {
+                height: 48px;
+                width: 48px;
+            }
+
+        .author-info {
+            color: #676a6c;
+            font-size: 11px;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .forum-post-info {
+            padding: 9px 12px 6px 12px;
+            background: #f9f9f9;
+            border: 1px solid #f1f1f1;
+        }
+
+        .media-body > .media {
+            background: #f9f9f9;
+            border-radius: 3px;
+            border: 1px solid #f1f1f1;
+        }
+
+        .forum-post-container .media-body .photos {
+            margin: 10px 0;
+        }
+
+        .forum-photo {
+            max-width: 140px;
+            border-radius: 3px;
+        }
+
+        .media-body > .media .forum-avatar {
+            width: 70px;
+            margin-right: 10px;
+        }
+
+            .media-body > .media .forum-avatar .img-circle {
+                height: 38px;
+                width: 38px;
+            }
+
+        .mid-icon {
+            font-size: 66px;
+        }
+
+        .forum-item {
+            margin: 10px 0;
+            padding: 10px 0 20px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .views-number {
+            font-size: 24px;
+            line-height: 18px;
+            font-weight: 400;
+        }
+
+        .forum-container,
+        .forum-post-container {
+            padding: 30px !important;
+        }
+
+        .forum-item small {
+            color: #999;
+        }
+
+        .forum-item .forum-sub-title {
+            color: #999;
+        }
+
+        .forum-title {
+            margin: 15px 0 15px 0;
+        }
+
+        .forum-info {
+            text-align: center;
+        }
+
+        .forum-desc {
+            color: #999;
+        }
+
+
+
+        a.forum-item-title {
+            color: #0275d8;
+            display: block;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+            a.forum-item-title:hover {
+                color: #0275d8;
+            }
+
+        .forum-icon .fa {
+            font-size: 30px;
+            margin-top: 8px;
+            color: #9b9b9b;
+        }
+
+        .forum-item.active .fa {
+            color: #1ab394;
+        }
+
+        .forum-item.active a.forum-item-title {
+            color: #0275d8;
+        }
+
+        @@media (max-width: 992px) {
+            .forum-info {
+                margin: 15px 0 10px 0;
+                /* Comment this is you want to show forum info in small devices */
+                display: none;
+            }
+
+            .forum-desc {
+                float: none !important;
+            }
+        }
+
+
+
+
+
+        .ibox {
+            clear: both;
+            margin-bottom: 25px;
+            margin-top: 0;
+            padding: 0;
+        }
+
+            .ibox.collapsed .ibox-content {
+                display: none;
+            }
+
+            .ibox.collapsed .fa.fa-chevron-up:before {
+                content: "\f078";
+            }
+
+            .ibox.collapsed .fa.fa-chevron-down:before {
+                content: "\f077";
+            }
+
+            .ibox:after,
+            .ibox:before {
+                display: table;
+            }
+
+        .ibox-title {
+            -moz-border-bottom-colors: none;
+            -moz-border-left-colors: none;
+            -moz-border-right-colors: none;
+            -moz-border-top-colors: none;
+            background-color: #ffffff;
+            border-color: #e7eaec;
+            border-image: none;
+            border-style: solid solid none;
+            border-width: 3px 0 0;
+            color: inherit;
+            margin-bottom: 0;
+            padding: 14px 15px 7px;
+            min-height: 48px;
+        }
+
+        .ibox-content {
+            background-color: #ffffff;
+            color: inherit;
+            padding: 15px 20px 20px 20px;
+            border-color: #e7eaec;
+            border-image: none;
+            border-style: solid solid none;
+            border-width: 1px 0;
+        }
+
+        .ibox-footer {
+            color: inherit;
+            border-top: 1px solid #e7eaec;
+            font-size: 90%;
+            background: #ffffff;
+            padding: 10px 15px;
+        }
+
+        .message-input {
+            height: 90px !important;
+        }
+
+        .form-control, .single-line {
+            background-color: #FFFFFF;
+            background-image: none;
+            border: 1px solid #e5e6e7;
+            border-radius: 1px;
+            color: inherit;
+            display: block;
+            padding: 6px 12px;
+            transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .text-navy {
+            color: #1ab394;
+        }
+
+        .mid-icon {
+            font-size: 66px !important;
+        }
+
+        .m-b-sm {
+            margin-bottom: 10px;
+        }
+    </style>
+    <style>
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* make scrollbar transparent */
+        }
+
+        .comment-wrapper .panel-body {
+            max-height: 650px;
+            overflow: auto;
+            background-color: white;
+        }
+
+        .comment-wrapper .media-list .media img {
+            width: 64px;
+            height: 64px;
+        }
+
+        .comment-wrapper .media-list .media {
+            border-bottom: 1px solid #efefef;
+            margin-bottom: 15px;
+        }
+
+        @@media (min-width: 0) {
+            .g-mr-15 {
+                margin-right: 1.07143rem !important;
+            }
+        }
+
+        @@media (min-width: 0) {
+            .g-mt-3 {
+                margin-top: 0.21429rem !important;
+            }
+        }
+
+        .g-height-50 {
+            height: 50px;
+        }
+
+        .g-width-50 {
+            width: 50px !important;
+        }
+
+        @@media (min-width: 0) {
+            .g-pa-30 {
+                padding: 2.14286rem !important;
+            }
+        }
+
+        .g-bg-secondary {
+            background-color: transparent !important;
+        }
+
+        .u-shadow-v18 {
+            box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 0.50);
+        }
+
+        .g-color-green-v4 {
+            color: #009b10 !important;
+        }
+
+        .g-color-red-v4 {
+            color: #f00 !important;
+        }
+
+        .g-font-size-12 {
+            font-size: 0.85714rem !important;
+        }
+
+        .media-comment {
+            margin-top: 20px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div hidden id="Message">
+            <div class="d-flex justify-content-center">
+                <div class="row">
+                    <div class="col">
+                        <div class="msg msg-danger text-center">@TempData["Message"]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="wrapper wrapper-content animated fadeInRight ">
+                    <div class="ibox-content forum-container" style="box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 1);">
+                        <div class="row ">
+                            <div class=" col-sm-10 ">
+                                <h3>@ViewBag.Topic.Title</h3>
+                            </div>
+                            <div class="col">
+                                <div>
+                                    <small>Views: <i>@ViewBag.Topic.ViewCounter</i></small>
+                                </div>
+
+                                <div>
+                                    <small>Author: <i>@ViewBag.Topic.Username</i></small>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="forum-sub-title">@ViewBag.Topic.Description</div>
+
+                        <hr>
+                        <div class="mt-2 pt-4">
+                            <div class="container dark-grey-text mt-0">
+
+                                <div class="row d-flex justify-content-center wow fadeIn">
+                                    <div class="col-md-12">
+                                        <form>
+                                            <div class="form-group basic-textarea" style="box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 1);">
+                                                <textarea required class="form-control pl-2 my-0 bg-transparent border-0" id="exampleFormControlTextarea2" name="description" rows="3" placeholder="Type your message here..." maxlength="255"></textarea>
+                                                <input hidden name="fktopicid" value="@ViewBag.Topic.Id">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-rounded rounded-pill btn-sm" formaction="@Url.Action("PostComment")">Send</button>
+                                        </form>
+                                        @foreach (var comment in Model)
+                                        {
+                                            <form method="post" action="/forum/updatecomment?id=@comment.Id">
+                                                <div id="pwdModal_@comment.Id" class="modal fade position-fixed" tabindex="-1" role="dialog" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="col-md-12">
+                                                                    <div class="panel panel-default">
+                                                                        <div class="panel-body">
+                                                                            <div class="text-center">
+                                                                                <h3>Edit comment</h3>
+                                                                                <div class="panel-body">
+                                                                                    <fieldset>
+                                                                                        <div class="form-group">
+                                                                                            <textarea required class="form-control pl-2 my-0 bg-transparent border-0" id="exampleFormControlTextarea2" name="description" rows="3" placeholder="Type your message here..." maxlength="255">@comment.Description</textarea>
+                                                                                        </div>
+                                                                                        <input class="btn btn-lg btn-primary btn-block" type="submit" value="Send" onclick="MessageFunction()" />
+                                                                                    </fieldset>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <form>
+                                                <div class="media g-mb-30 media-comment">
+                                                    <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="@comment.ProfilePicture" alt="Image Description">
+
+                                                    <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+
+
+                                                        <div class="g-mb-15">
+                                                            <h5 class="h5 g-color-gray-dark-v1 mb-0">@comment.Username</h5>
+                                                            <span class="g-color-gray-dark-v4 g-font-size-12">@comment.Date</span>
+                                                        </div>
+
+                                                        <p>
+                                                            @comment.Description
+                                                        </p>
+
+                                                        <ul class="list-inline d-sm-flex my-0">
+                                                            <li class="list-inline-item g-mr-20">
+                                                                <a id="like" class="u-link-v5 g-color-green-v4 g-color-primary--hover" href="#!" onclick="upvote(@comment.Id, @comment.LikeCounter, @comment.DislikeCounter); return false">
+                                                                    @if (comment.Liked)
+                                                                    {
+                                                                        <i id="upvoteCounter @comment.Id" class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3" style="border:solid">@comment.LikeCounter</i>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <i id="upvoteCounter @comment.Id" class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3">@comment.LikeCounter</i>
+                                                                    }
+                                                                </a>
+                                                            </li>
+                                                            <li class="list-inline-item g-mr-20">
+                                                                <a id="dislike" class="u-link-v5 g-color-red-v4 g-color-primary--hover" href="#!" onclick="downvote(@comment.Id, @comment.DislikeCounter, @comment.LikeCounter); return false">
+                                                                    @if (comment.Disliked)
+                                                                    {
+                                                                        <i id="downvoteCounter @comment.Id" class="fa fa-thumbs-down g-pos-rel g-top-1 g-mr-3" style="border:solid">@comment.DislikeCounter</i>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <i id="downvoteCounter @comment.Id" class="fa fa-thumbs-down g-pos-rel g-top-1 g-mr-3">@comment.DislikeCounter</i>
+                                                                    }
+                                                                </a>
+                                                            </li>
+                                                            @if (TempData["ID"].ToString() == comment.FkUserId.ToString() || TempData["Role"].ToString() == "2")
+                                                            {
+                                                                <button class="btn" type="button" data-target="#pwdModal_@comment.Id" data-toggle="modal"><i class="fa fa-pencil"></i></button>
+                                                                <button type="button" class="btn" onclick="deleteConfirm(@comment.Id, @comment.FkTopicId)"><i class="fa fa-trash"></i></button>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            var i;
+            for (i = 1; i < 2000; i++) {
+                sessionStorage.removeItem("FORUMupCounter" + i);
+                sessionStorage.removeItem("FORUMdownCounter" + i);
+            }
+
+            if (sessionStorage.getItem('Message')) {
+                document.getElementById('Message').hidden = false;
+                sessionStorage.removeItem('Message');
+            }
+
+        }
+        var upstatus = true;
+        var delstatus = true;
+        function upvote(id, upcounter, downcounter) {
+            var upCount;
+            var downCount;
+
+            if (upstatus) {
+                upstatus = false;
+
+                if (sessionStorage.getItem("FORUMupCounter" + id) != null) {
+                    upCount = sessionStorage.getItem("FORUMupCounter" + id);
+                }
+                else {
+                    upCount = upcounter;
+                }
+
+                if (sessionStorage.getItem("FORUMdownCounter" + id) != null) {
+                    downCount = sessionStorage.getItem("FORUMdownCounter" + id);
+                }
+                else {
+                    downCount = downcounter;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/forum/UpvoteComment',
+                    data: { 'id': id },
+                    success: function (response) {
+                        if (response.status == "Login")
+                            window.location.href = '/users/login';
+                        else if (response.status == "invert") {
+                            downCount--;
+                            upCount++;
+                            sessionStorage.setItem("FORUMupCounter" + id, upCount);
+                            sessionStorage.setItem("FORUMdownCounter" + id, downCount);
+                            document.getElementById("upvoteCounter " + id).innerHTML = "" + upCount;
+                            document.getElementById("downvoteCounter " + id).innerHTML = "" + downCount;
+                            document.getElementById("downvoteCounter " + id).style.border = "none";
+                            document.getElementById("upvoteCounter " + id).style.border = "solid";
+                        }
+                        else if (response.status == "add") {
+                            upCount++;
+                            sessionStorage.setItem("FORUMupCounter" + id, upCount);
+                            document.getElementById("upvoteCounter " + id).innerHTML = "" + upCount;
+                            document.getElementById("upvoteCounter " + id).style.border = "solid";
+                        }
+                        else {
+                            upCount--;
+                            sessionStorage.setItem("FORUMupCounter" + id, upCount);
+                            document.getElementById("upvoteCounter " + id).innerHTML = "" + upCount;
+                            document.getElementById("upvoteCounter " + id).style.border = "none";
+                        }
+                    },
+                    error: function () {
+                        // add error message or smth
+                    }
+                });
+                enableUPVOTE();
+            }
+        }
+
+        function downvote(id, downcounter, upcounter) {
+            var downCount;
+            var upCount;
+
+            if (delstatus) {
+                delstatus = false;
+
+                if (sessionStorage.getItem("FORUMdownCounter" + id) != null) {
+                    downCount = sessionStorage.getItem("FORUMdownCounter" + id);
+                }
+                else {
+                    downCount = downcounter;
+                }
+
+                if (sessionStorage.getItem("FORUMupCounter" + id) != null) {
+                    upCount = sessionStorage.getItem("FORUMupCounter" + id);
+                }
+                else {
+                    upCount = upcounter;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/forum/DownvoteComment',
+                    data: { 'id': id },
+                    success: function (response) {
+                        if (response.status == "Login")
+                            window.location.href = '/users/login';
+                        else if (response.status == "invert") {
+                            downCount++;
+                            upCount--;
+                            sessionStorage.setItem("FORUMupCounter" + id, upCount);
+                            sessionStorage.setItem("FORUMdownCounter" + id, downCount);
+                            document.getElementById("upvoteCounter " + id).innerHTML = "" + upCount;
+                            document.getElementById("downvoteCounter " + id).innerHTML = "" + downCount;
+                            document.getElementById("upvoteCounter " + id).style.border = "none";
+                            document.getElementById("downvoteCounter " + id).style.border = "solid";
+                        }
+                        else if (response.status == "add") {
+                            downCount++;
+                            sessionStorage.setItem("FORUMdownCounter" + id, downCount);
+                            document.getElementById("downvoteCounter " + id).innerHTML = "" + downCount;
+                            document.getElementById("downvoteCounter " + id).style.border = "solid";
+                        }
+                        else {
+                            downCount--;
+                            sessionStorage.setItem("FORUMdownCounter" + id, downCount);
+                            document.getElementById("downvoteCounter " + id).innerHTML = "" + downCount;
+                            document.getElementById("downvoteCounter " + id).style.border = "none";
+                        }
+                    },
+                    error: function () {
+                        // add error message or smth
+                    }
+
+                });
+                enableDOWNVOTE();
+            }
+        }
+
+        function enableUPVOTE() {
+            setTimeout(function () { upstatus = true }, 1000);
+        };
+        function enableDOWNVOTE() {
+            setTimeout(function () { delstatus = true }, 1000);
+        };
+
+        function deleteConfirm(id, fktopicid) {
+            var r = confirm("Do you really want to delete this comment?");
+            if (r) {
+                deleteComment(id, fktopicid)
+            }
+            else {
+                this.event.preventDefault();
+            }
+        }
+
+        function deleteComment(id, fktopicid) {
+            $.ajax({
+                type: 'GET',
+                url: '/forum/DeleteComment',
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'fktopicid': fktopicid
+                },
+                error: function () {
+                    location.reload();
+                }
+            });
+        }
+
+        function MessageFunction() {
+            sessionStorage.setItem('Message', true);
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,371 @@
+﻿@model Frontend.Models.Users
+@{
+    ViewData["Title"] = "EditUserForm";
+    Layout = "_AdminLayout";
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <!--ICON LIBRARY-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/css/forum.css">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="~/css/Error.css">
+    <script>
+        window.onload = function () {
+            if (sessionStorage.getItem('Message')) {
+                document.getElementById('Message').hidden = false;
+                sessionStorage.removeItem('Message');
+            }
+        }
+        function MessageFunction() {
+            sessionStorage.setItem('Message', true);
+        }
+        function deleteConfirm() {
+            var r = confirm("Do you really want to remove this user? All ads, topics and comments of this user will be removed as well!");
+            if (r) {
+                MessageFunction()
+            }
+            else {
+                this.event.preventDefault();
+            }
+        }
+    </script>
+    <style>
+        .upload-btnn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .btnn {
+            background-color: dodgerblue;
+            padding: 8px 20px;
+            border-radius: 4px;
+            border: none;
+            font-size: 15px;
+            color: white
+        }
+
+        .upload-btnn-wrapper input[type=file] {
+            font-size: 50px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div class="container" id="myGroup">
+        <div class="row flex-lg-nowrap">
+            <div class="col col-lg-9 mx-auto">
+                <div class="row">
+                    <div class="col mb-3">
+                        <div class="card ">
+                            <div class="card-body" style="box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 1);">
+                                <div class="e-profile">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-auto mb-3">
+                                            <div class="mx-auto" style="width: 140px;">
+                                                <div class="d-flex justify-content-center align-items-center rounded" style="height: 140px; width: 140px">
+                                                    <img src="@Model.ProfilePicture" width="140" height="140" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                                            <div class="text-center text-sm-left mb-2 mb-sm-0">
+                                                @if (Model.FirstName != null && Model.LastName != null)
+                                                {
+                                                    <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">@Model.FirstName @Model.LastName</h4>
+                                                }
+                                                else
+                                                {
+                                                    <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">@Model.Username</h4>
+                                                }
+                                                <div class="text-muted"><small>Last seen 2 hours ago</small></div>
+                                                <div class="mt-2">
+                                                    <form method="post" action="/users/picture?id=@Model.Id" enctype="multipart/form-data">
+                                                        <div class="row">
+                                                            <div class="upload-btnn-wrapper col mb-1">
+
+                                                                <input type="file" name="picture" />
+                                                                <button id="upload" class="btnn">Upload a file</button>
+                                                            </div>
+                                                            <!--<input class="btn-primary mb-3" type="file" name="picture" /><br />-->
+                                                            @*<input type="submit" value="Upload" />*@
+                                                        </div>
+                                                        <button class="btn btn-primary " type="submit">
+                                                            <i class="fa fa-fw fa-camera"></i>
+                                                            <span>Change Photo</span>
+                                                        </button>
+                                                    </form>
+
+                                                </div>
+
+                                            </div>
+                                            <div class="text-center text-sm-right">
+                                                @if (Model.Role == 2 && !Model.Blocked)
+                                                {
+                                                    <span class="badge badge-secondary">administrator</span>
+                                                }
+                                                else if (Model.Role == 2 && Model.Blocked)
+                                                {
+                                                    <span class="badge badge-secondary">administrator</span> <span class="badge badge-secondary">blocked</span>
+                                                }
+                                                else if (Model.Blocked)
+                                                {
+                                                    <span class="badge badge-secondary">user</span> <span class="badge badge-secondary">blocked</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-secondary">user</span>
+                                                }
+                                                <div class="text-muted"><small>Joined @Model.Date</small></div>
+
+                                                <div>
+                                                    <div hidden id="Message">
+                                                        <div class="d-flex justify-content-center">
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="msg msg-danger text-center">@TempData["Message"]</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="row">
+                                                        <div class="col-md-5 mb-3">
+                                                            <div class="dropdown ">
+                                                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    Role
+                                                                </button>
+
+                                                                <div class="dropdown-menu" aria-labelledby="dropdownMenu3">
+
+                                                                    <form method="post" action="/admin/role?id=@Model.Id&role=2">
+                                                                        <button onclick="MessageFunction()" class="dropdown-item" type="submit">Admin</button>
+                                                                    </form>
+
+                                                                    <form method="post" action="/admin/role?id=@Model.Id&role=1">
+                                                                        <button onclick="MessageFunction()" class="dropdown-item" type="submit">User</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-5 mb-3">
+                                                            <div class="dropdown dropright">
+                                                                <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    User settings
+                                                                </button>
+
+                                                                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+
+                                                                    <form method="post" action="/users/myads?id=@Model.Id">
+                                                                        <button class="dropdown-item" type="submit">User ads</button>
+                                                                    </form>
+
+                                                                    <form method="post" action="/users/mytopics?id=@Model.Id">
+                                                                        <button class="dropdown-item" type="submit">User topics</button>
+                                                                    </form>
+
+                                                                    <div class="dropdown-divider"></div>
+
+
+                                                                    <button class="dropdown-item" type="button" data-target="#pwdModal" data-toggle="modal">
+                                                                        <span>Block user</span>
+                                                                    </button>
+
+                                                                    <form method="post" action="/admin/removeuser?id=@Model.Id">
+                                                                        <button class="dropdown-item" type="submit" onclick="deleteConfirm()">Remove user</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <form method="post" action="/admin/blockuser?id=@Model.Id">
+                                        <div id="pwdModal" class="modal fade position-fixed" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="col-md-12">
+                                                            <div class="panel panel-default">
+                                                                <div class="panel-body">
+                                                                    <div class="text-center">
+                                                                        <h3>Reason</h3>
+                                                                        <div class="panel-body">
+                                                                            <fieldset>
+                                                                                <div class="form-group">
+                                                                                    <textarea required class="form-control pl-2 my-0 bg-transparent border-0" id="exampleFormControlTextarea2" name="reason" rows="3" placeholder="Type your reason here..." maxlength="255"></textarea>
+                                                                                </div>
+                                                                                <input class="btn btn-lg btn-primary btn-block" type="submit" value="Block user" onclick="MessageFunction()" />
+                                                                            </fieldset>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <ul class="nav nav-tabs">
+
+                                        <li class="nav-item">
+                                            <a class="active nav-link" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="true" aria-controls="multiCollapseExample1">General</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="active nav-link" data-toggle="collapse" href="#multiCollapseExample3" role="button" aria-expanded="false" aria-controls="multiCollapseExample3">Username</a>
+                                        </li>
+
+
+                                    </ul>
+                                    <div class="tab-content pt-3">
+                                        <div class="tab-pane active">
+                                            <!--user's optional info-->
+                                            <form method="post" action="/users/updateuser?id=@Model.Id">
+                                                <div class="collapse" id="multiCollapseExample1" data-parent="#myGroup">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>First name</label>
+                                                                @if (Model != null && Model.FirstName != null)
+                                                                {
+                                                                    <input id="firstname" class="form-control" type="text" name="FirstName" placeholder="First Name" value="@Model.FirstName" maxlength="20" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input class="form-control" type="text" name="FirstName" placeholder="First Name" maxlength="20" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Last name</label>
+                                                                @if (Model != null && Model.LastName != null)
+                                                                {
+                                                                    <input class="form-control" type="text" name="LastName" placeholder="Last Name" value="@Model.LastName" maxlength="30" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input class="form-control" type="text" name="LastName" placeholder="Last Name" maxlength="30" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Phone number</label>
+                                                                @if (Model != null && Model.PhoneNumber != null)
+                                                                {
+                                                                    <input class="form-control" type="text" name="PhoneNumber" placeholder="Phone Number" value="@Model.PhoneNumber" pattern="[+0-9][0-9]{8,11}" title="+370 or 86 type numbers with 12 or 9 length">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input class="form-control" type="text" name="PhoneNumber" placeholder="Phone Number" pattern="[+0-9][0-9]{8,11}" title="+370 or 86 type numbers with 12 or 9 length">
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Address</label>
+                                                                @if (Model != null && Model.Address != null)
+                                                                {
+                                                                    <input class="form-control" type="text" name="Address" placeholder="Address" value="@Model.Address" maxlength="40" pattern="^[a-z\d\.]{,40}$" title="No special characters allowed">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input class="form-control" type="text" name="Address" placeholder="Address" maxlength="40" pattern="^[a-z\d\.]{,40}$" title="No special characters allowed">
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col col-sm-3">
+                                                            <label>City</label>
+
+                                                            <div class="form-label-group">
+                                                                <select required id="inputCountry" class="form-control" name="fkcountryid">
+                                                                    <option value="" selected>Cities</option>
+                                                                    @foreach (var city in ViewBag.Countries)
+                                                                    {
+                                                                        if (city.Id == Model.FkCountryId)
+                                                                        {
+                                                                            <option selected value="@city.Id">@city.Name</option>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <option value="@city.Id">@city.Name</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex justify-content-end">
+                                                            @*<button class="btn btn-primary" type="submit">Save Changes</button>*@
+                                                            <input class="btn btn-primary" type="submit" onclick="MessageFunction()" value="Save Changes" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+
+                                            <!--user's new username-->
+                                            <form method="post" action="/users/updateusername?id=@Model.Id">
+                                                <div class="collapse" id="multiCollapseExample3" data-parent="#myGroup">
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-6 mb-3">
+                                                            <div class="mb-2"><b>Change Username</b></div>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="form-group">
+                                                                        <input required id="newusername" class="form-control" type="text" name="username" placeholder="Username" value="@Model.Username" maxlength="20" pattern="[A-Za-z0-9]{6,}" title="Six or more, non symbol or number, characters">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex justify-content-end">
+                                                            <button class="btn btn-primary" onclick="MessageFunction()" type="submit">Save Changes</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

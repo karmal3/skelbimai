@@ -1,0 +1,558 @@
+﻿@model IEnumerable<Frontend.Models.Comment>
+@{
+    ViewData["Title"] = "AdDetail";
+    if (TempData["Role"] != null)
+    {
+        switch (TempData["Role"].ToString())
+        {
+            case "1":
+                Layout = "_UserLayout";
+                break;
+            case "2":
+                Layout = "_AdminLayout";
+                break;
+            default:
+                break;
+        }
+    }
+}
+<style>
+    .rating {
+        display: inline-flex;
+        overflow: hidden;
+        flex-direction: row-reverse;
+        position: relative;
+    }
+
+    .rating-0 {
+        filter: grayscale(100%);
+    }
+
+    .rating > input {
+        display: none;
+    }
+
+    .rating > label {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23e3e3e3' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 76%;
+        transition: .3s;
+    }
+
+    .rating > input:checked ~ label,
+    .rating > input:checked ~ label ~ label {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23fcd93a' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e");
+    }
+
+
+    .rating > input:not(:checked) ~ label:hover,
+    .rating > input:not(:checked) ~ label:hover ~ label {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='126.729' height='126.73'%3e%3cpath fill='%23d8b11e' d='M121.215 44.212l-34.899-3.3c-2.2-.2-4.101-1.6-5-3.7l-12.5-30.3c-2-5-9.101-5-11.101 0l-12.4 30.3c-.8 2.1-2.8 3.5-5 3.7l-34.9 3.3c-5.2.5-7.3 7-3.4 10.5l26.3 23.1c1.7 1.5 2.4 3.7 1.9 5.9l-7.9 32.399c-1.2 5.101 4.3 9.3 8.9 6.601l29.1-17.101c1.9-1.1 4.2-1.1 6.1 0l29.101 17.101c4.6 2.699 10.1-1.4 8.899-6.601l-7.8-32.399c-.5-2.2.2-4.4 1.9-5.9l26.3-23.1c3.8-3.5 1.6-10-3.6-10.5z'/%3e%3c/svg%3e");
+    }
+</style>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/forum.css">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* make scrollbar transparent */
+        }
+
+        .comment-wrapper .panel-body {
+            max-height: 650px;
+            overflow: auto;
+            background-color: white;
+        }
+
+        .comment-wrapper .media-list .media img {
+            width: 64px;
+            height: 64px;
+        }
+
+        .comment-wrapper .media-list .media {
+            border-bottom: 1px solid #efefef;
+            margin-bottom: 15px;
+        }
+
+        @@media (min-width: 0) {
+            .g-mr-15 {
+                margin-right: 1.07143rem !important;
+            }
+        }
+
+        @@media (min-width: 0) {
+            .g-mt-3 {
+                margin-top: 0.21429rem !important;
+            }
+        }
+
+        .g-height-50 {
+            height: 50px;
+        }
+
+        .g-width-50 {
+            width: 50px !important;
+        }
+
+        @@media (min-width: 0) {
+            .g-pa-30 {
+                padding: 2.14286rem !important;
+            }
+        }
+
+        .g-bg-secondary {
+            background-color: transparent !important;
+        }
+
+        .u-shadow-v18 {
+            box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 0.50);
+        }
+
+        .g-color-green-v4 {
+            color: #009b10 !important;
+        }
+
+        .g-color-red-v4 {
+            color: #f00 !important;
+        }
+
+        .g-font-size-12 {
+            font-size: 0.85714rem !important;
+        }
+
+        .media-comment {
+            margin-top: 20px
+        }
+    </style>
+</head>
+
+<body>
+
+    <!--Main layout-->
+    <div class="mt-5 pt-4">
+        <div class="container dark-grey-text mt-5">
+
+            <!--Grid row-->
+            <div class="row wow fadeIn">
+
+                <!--Grid column-->
+                <div class="col-md-6 mb-4">
+
+                    <div id="carouselExampleControls" class="carousel slide  " style="height:100%; width:100%;" data-ride="carousel">
+                        <div class="carousel-inner rounded">
+                            <img src="@ViewBag.Ad.Picture" class="img-fluid carousel-item active" style="max-height:350px; max-width:600px;" alt="">
+
+                            @foreach (var picture in ViewBag.AdPictures)
+                            {
+                                <div class="carousel-item" align="center">
+                                    <img src="@picture" class=" img-fluid" style="max-height:350px; max-width:600px;" alt="">
+                                </div>
+                            }
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="false"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="false"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+
+
+
+                </div>
+                <!--Grid column-->
+                <!--Grid column-->
+                <div class="col-md-6 mb-4">
+
+                    <!--Content-->
+                    <div class="p-0">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="badge badge-primary ">Ad created by @ViewBag.Ad.Username</h6>
+                                <h6 class="badge badge-dark ">@ViewBag.Ad.ViewCounter Views</h6>
+
+
+                                <div class="mb-2">
+                                    <span class="badge badge-primary mr-1">Category</span>
+                                    <span class="badge badge-secondary mr-1">@ViewBag.Ad.Category</span>
+
+                                </div>
+
+                                <div class="rating">
+                                    <input onclick="rate(5, @ViewBag.Ad.Id)" type="radio" id="rating-1">
+                                    <label for="rating-1"></label>
+                                    <input onclick="rate(4, @ViewBag.Ad.Id)" type="radio" id="rating-2">
+                                    <label for="rating-2"></label>
+                                    <input onclick="rate(3, @ViewBag.Ad.Id)" type="radio" id="rating-3">
+                                    <label for="rating-3"></label>
+                                    <input onclick="rate(2, @ViewBag.Ad.Id)" type="radio" id="rating-4">
+                                    <label for="rating-4"></label>
+                                    <input onclick="rate(1, @ViewBag.Ad.Id)" type="radio" id="rating-5">
+                                    <label for="rating-5"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="lead">
+                                    <h1 class="text-right">@ViewBag.Ad.Price&euro;</h1>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <hr>
+                    <p class="lead font-weight-bold">Description</p>
+                    <div style=" height: 200px; overflow:scroll; ">
+                        <p>
+                            @ViewBag.Ad.Description
+                        </p>
+                    </div>
+                </div>
+                <!--Content-->
+            </div>
+            <!--Grid column-->
+        </div>
+        <!--Grid row-->
+        <!--Grid row-->
+        <!--Grid row-->
+        @*<div class="row d-flex justify-content-center wow fadeIn">
+
+            <!--Grid column-->
+            <div class="col-md-6 text-center">
+
+                <h4 class="my-4 h4">Additional information</h4>
+
+                <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus suscipit modi sapiente illo soluta odit
+                    voluptates,
+                    quibusdam officia. Neque quibusdam quas a quis porro? Molestias illo neque eum in laborum.
+                </p>
+
+            </div>
+            <!--Grid column-->
+
+        </div>*@
+        <hr>
+
+        <div class="row d-flex justify-content-center wow fadeIn">
+            <div class="col-md-12">
+                <form>
+                    <div class="form-group basic-textarea" style="box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 1);">
+                        <textarea required class="form-control pl-2 my-0 bg-transparent border-0" id="exampleFormControlTextarea2" name="description" rows="3" placeholder="Type your message here..." maxlength="255"></textarea>
+                    </div>
+                    <input hidden name="fkskelbimasid" value="@ViewBag.Ad.Id">
+                    <button type="submit" class="btn btn-primary btn-rounded rounded-pill btn-sm" formaction="@Url.Action("PostComment")">Post</button>
+                </form>
+
+                @foreach (var comment in Model)
+                {
+                    <form>
+                        <div id="pwdModal_@comment.Id" class="modal fade position-fixed" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default">
+                                                <div class="panel-body">
+                                                    <div class="text-center">
+                                                        <h3>Edit comment</h3>
+                                                        <div class="panel-body">
+                                                            <fieldset>
+                                                                <input hidden name="id" value="@comment.Id" />
+                                                                <div class="form-group">
+                                                                    <textarea required class="form-control pl-2 my-0 bg-transparent border-0" id="exampleFormControlTextarea2" name="description" rows="3" placeholder="Type your message here..." maxlength="255">@comment.Description</textarea>
+                                                                </div>
+                                                                <input class="btn btn-lg btn-primary btn-block" type="submit" value="Send" formaction="@Url.Action("UpdateComment")" />
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form>
+                        <div class="media g-mb-30 media-comment">
+                            <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="@comment.ProfilePicture" alt="Image Description">
+
+                            <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+
+
+                                <div class="g-mb-15">
+                                    <h5 class="h5 g-color-gray-dark-v1 mb-0">@comment.Username</h5>
+                                    <span class="g-color-gray-dark-v4 g-font-size-12">@comment.Date</span>
+                                </div>
+
+                                <p>
+                                    @comment.Description
+                                </p>
+
+                                <ul class="list-inline d-sm-flex my-0">
+                                    <li class="list-inline-item g-mr-20">
+                                        <a id="like" class="u-link-v5 g-color-green-v4 g-color-primary--hover" href="#!" onclick="upvote(@comment.Id, @comment.LikeCounter, @comment.DislikeCounter); return false">
+                                            @if (comment.Liked)
+                                            {
+                                                <i id="upvoteCounter @comment.Id" class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3" style="border:solid">@comment.LikeCounter</i>
+                                            }
+                                            else
+                                            {
+                                                <i id="upvoteCounter @comment.Id" class="fa fa-thumbs-up g-pos-rel g-top-1 g-mr-3">@comment.LikeCounter</i>
+                                            }
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item g-mr-20">
+                                        <a id="dislike" class="u-link-v5 g-color-red-v4 g-color-primary--hover" href="#!" onclick="downvote(@comment.Id, @comment.DislikeCounter, @comment.LikeCounter); return false">
+                                            @if (comment.Disliked)
+                                            {
+                                                <i id="downvoteCounter @comment.Id" class="fa fa-thumbs-down g-pos-rel g-top-1 g-mr-3" style="border:solid">@comment.DislikeCounter</i>
+                                            }
+                                            else
+                                            {
+                                                <i id="downvoteCounter @comment.Id" class="fa fa-thumbs-down g-pos-rel g-top-1 g-mr-3">@comment.DislikeCounter</i>
+                                            }
+                                        </a>
+                                    </li>
+                                    @if (TempData["ID"].ToString() == comment.FkUserId.ToString() || TempData["Role"].ToString() == "2")
+                                    {
+                                        <button type="button" class="btn" data-target="#pwdModal_@comment.Id" data-toggle="modal"><i class="fa fa-pencil"></i></button>
+                                        <button type="button" class="btn" onclick="deleteConfirm(@comment.Id, @comment.FkSkelbimasId)"><i class="fa fa-trash"></i></button>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            var i;
+            for (i = 686; i < 3000; i++) {
+                sessionStorage.removeItem("upCounter" + i);
+                sessionStorage.removeItem("downCounter" + i);
+            }
+        }
+        var upstatus = true;
+        var delstatus = true;
+        function rate(rating, fkskelbimasid) {
+            $.ajax({
+                type: 'POST',
+                url: '/ads/ratead',
+                data: {
+                    'rating': rating,
+                    'fkskelbimasid': fkskelbimasid
+                },
+                success: function (response) {
+                    if (response.status == "Login")
+                        window.location.href = '/users/login';
+                    alert(response.status);
+                },
+                error: function () {
+                    // add error message or smth
+                }
+            });
+        }
+
+        function upvote(id, upcounter, downcounter) {
+            var upCount;
+            var downCount;
+
+            if (upstatus) {
+                upstatus = false;
+
+                if (sessionStorage.getItem("upCounter" + id) != null) {
+                    upCount = sessionStorage.getItem("upCounter" + id);
+                }
+                else {
+                    upCount = upcounter;
+                }
+
+                if (sessionStorage.getItem("downCounter" + id) != null) {
+                    downCount = sessionStorage.getItem("downCounter" + id);
+                }
+                else {
+                    downCount = downcounter;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/ads/UpvoteComment',
+                    data: { 'id': id },
+                    success: function (response) {
+                        if (response.status == "Login")
+                            window.location.href = '/users/login';
+                        else if (response.status == "invert") {
+                            downCount--;
+                            upCount++;
+                            sessionStorage.setItem("upCounter" + id, upCount);
+                            sessionStorage.setItem("downCounter" + id, downCount);
+                            document.getElementById("upvoteCounter " + id).innerHTML = "" + upCount;
+                            document.getElementById("downvoteCounter " + id).innerHTML = "" + downCount;
+                            document.getElementById("downvoteCounter " + id).style.border = "none";
+                            document.getElementById("upvoteCounter " + id).style.border = "solid";
+                        }
+                        else if (response.status == "add") {
+                            upCount++;
+                            sessionStorage.setItem("upCounter" + id, upCount);
+                            document.getElementById("upvoteCounter " + id).innerHTML = "" + upCount;
+                            document.getElementById("upvoteCounter " + id).style.border = "solid";
+                        }
+                        else {
+                            upCount--;
+                            sessionStorage.setItem("upCounter" + id, upCount);
+                            document.getElementById("upvoteCounter " + id).innerHTML = "" + upCount;
+                            document.getElementById("upvoteCounter " + id).style.border = "none";
+                        }
+                    },
+                    error: function () {
+                        // add error message or smth
+                    }
+                });
+                enableUPVOTE();
+            }
+        }
+
+        function downvote(id, downcounter, upcounter) {
+            var downCount;
+            var upCount;
+
+            if (delstatus) {
+                delstatus = false;
+
+                if (sessionStorage.getItem("downCounter" + id) != null) {
+                    downCount = sessionStorage.getItem("downCounter" + id);
+                }
+                else {
+                    downCount = downcounter;
+                }
+
+                if (sessionStorage.getItem("upCounter" + id) != null) {
+                    upCount = sessionStorage.getItem("upCounter" + id);
+                }
+                else {
+                    upCount = upcounter;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/ads/DownvoteComment',
+                    data: { 'id': id },
+                    success: function (response) {
+                        if (response.status == "Login")
+                            window.location.href = '/users/login';
+                        else if (response.status == "invert") {
+                            downCount++;
+                            upCount--;
+                            sessionStorage.setItem("upCounter" + id, upCount);
+                            sessionStorage.setItem("downCounter" + id, downCount);
+                            document.getElementById("upvoteCounter " + id).innerHTML = "" + upCount;
+                            document.getElementById("downvoteCounter " + id).innerHTML = "" + downCount;
+                            document.getElementById("downvoteCounter " + id).style.border = "solid";
+                            document.getElementById("upvoteCounter " + id).style.border = "none";
+                        }
+                        else if (response.status == "add") {
+                            downCount++;
+                            sessionStorage.setItem("downCounter" + id, downCount);
+                            document.getElementById("downvoteCounter " + id).innerHTML = "" + downCount;
+                            document.getElementById("downvoteCounter " + id).style.border = "solid";
+                        }
+                        else {
+                            downCount--;
+                            sessionStorage.setItem("downCounter" + id, downCount);
+                            document.getElementById("downvoteCounter " + id).innerHTML = "" + downCount;
+                            document.getElementById("downvoteCounter " + id).style.border = "none";
+                        }
+                    },
+                    error: function () {
+                        // add error message or smth
+                    }
+
+                });
+                enableDOWNVOTE();
+            }
+        }
+
+        function enableUPVOTE() {
+            setTimeout(function () { upstatus = true }, 1000);
+        };
+        function enableDOWNVOTE() {
+            setTimeout(function () { delstatus = true }, 1000);
+        };
+
+        function updateComment(id, desc) {
+            $.ajax({
+                type: 'POST',
+                url: '/ads/UpdateComment',
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'desc': desc
+                },
+                success: function (response) {
+                    if (response.status == "Updated") {
+                        location.reload();
+                    }
+                    else if (response.status == "Failed") {
+                        // Add error msg or smth
+                    }
+                    else if (response.status == "Login") {
+                        window.location.href = "/users/login"
+                    }
+                },
+                error: function () {
+                    //location.reload();
+                }
+            });
+        }
+
+        function deleteConfirm(id, fkskelbimasid) {
+            var r = confirm("Do you really want to delete this comment?");
+            if (r) {
+                test(id, fkskelbimasid)
+            }
+            else {
+                this.event.preventDefault();
+            }
+        }
+
+        function test(id, fkskelbimasid) {
+            $.ajax({
+                type: 'GET',
+                url: '/ads/DeleteComment',
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'fkskelbimasid': fkskelbimasid
+                },
+                error: function () {
+                    location.reload();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

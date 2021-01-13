@@ -1,0 +1,334 @@
+﻿@model Frontend.Models.Users
+@{
+    ViewData["Title"] = "Profile";
+    if (TempData["Role"] != null)
+    {
+        switch (TempData["Role"].ToString())
+        {
+            case "1":
+                Layout = "_UserLayout";
+                break;
+            case "2":
+                Layout = "_AdminLayout";
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/forum.css">
+    <link rel="stylesheet" href="~/css/site.css">
+
+    <script>
+        function updateUsername() {
+            var Username = document.getElementById("newusername").value
+            sessionStorage.setItem("Username", Username);
+            document.getElementById("username").innerHTML = Username;
+        }
+        window.onload = function () {
+            if (sessionStorage.getItem('Message')) {
+                document.getElementById('Message').hidden = false;
+                sessionStorage.removeItem('Message');
+            }
+        }
+        function MessageFunction() {
+            sessionStorage.setItem('Message', true);
+        }
+    </script>
+
+
+</head>
+
+
+<body>
+    <div class="container" id="myGroup">
+        <p hidden id="Message" class="alert text-center" style="color:red">@TempData["Message"]</p>
+        <div class="row flex-lg-nowrap">
+            <div class="col col-lg-9 mx-auto">
+                <div class="row">
+                    <div class="col mb-3">
+                        <div class="card ">
+                            <div class="card-body" style="box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 1);">
+                                <div class="e-profile">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-auto mb-3">
+                                            <div class="mx-auto" style="width: 140px;">
+                                                <div class="d-flex justify-content-center align-items-center rounded" style="height: 140px; width: 140px">
+
+                                                    <img src="@Model.ProfilePicture" width="140" height="140" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                                            <div class="text-center text-sm-left mb-2 mb-sm-0">
+                                                @if (Model.FirstName != null && Model.LastName != null)
+                                                {
+                                                    <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">@Model.FirstName @Model.LastName</h4>
+                                                }
+                                                else
+                                                {
+                                                    <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">@Model.Username</h4>
+                                                }
+
+                                                <div class="text-muted"><small>Last seen 2 hours ago</small></div>
+                                                <div class="mt-2">
+                                                    <form method="post" action="/users/picture" enctype="multipart/form-data">
+                                                        <input type="file" name="picture" /><br />
+                                                        <button class="btn btn-primary" type="submit">
+                                                            <i class="fa fa-fw fa-camera"></i>
+                                                            <span>Change Photo</span>
+                                                        </button>
+                                                        @*<input type="submit" value="Upload" />*@
+                                                    </form>
+
+                                                </div>
+                                            </div>
+                                            <div class="text-center text-sm-right">
+                                                @if (Model.Role == 2)
+                                                {
+                                                    <span class="badge badge-secondary">administrator</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-secondary">user</span>
+                                                }
+                                                <div class="text-muted"><small>Joined @Model.Date</small></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul class="nav nav-tabs">
+
+                                        <li class="nav-item">
+                                            <a class="active nav-link" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="true" aria-controls="multiCollapseExample1">General</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="active nav-link" data-toggle="collapse" href="#multiCollapseExample3" role="button" aria-expanded="false" aria-controls="multiCollapseExample3">Username</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="active nav-link" data-toggle="collapse" href="#multiCollapseExample4" role="button" aria-expanded="false" aria-controls="multiCollapseExample4">E-Mail</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="active nav-link" data-toggle="collapse" href="#multiCollapseExample2" role="button" aria-expanded="false" aria-controls="multiCollapseExample2">Password</a>
+                                        </li>
+
+                                    </ul>
+                                    <div class="tab-content pt-3">
+                                        <div class="tab-pane active">
+                                            <!--user's optional info-->
+                                            <form>
+                                                <div class="collapse" id="multiCollapseExample1" data-parent="#myGroup">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>First name</label>
+                                                                @if (Model != null && Model.FirstName != null)
+                                                                {
+                                                                    <input id="firstname" class="form-control" type="text" name="FirstName" placeholder="First Name" value="@Model.FirstName" maxlength="20" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input class="form-control" type="text" name="FirstName" placeholder="First Name" maxlength="20" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Last name</label>
+                                                                @if (Model != null && Model.LastName != null)
+                                                                {
+                                                                    <input class="form-control" type="text" name="LastName" placeholder="Last Name" value="@Model.LastName" maxlength="30" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input class="form-control" type="text" name="LastName" placeholder="Last Name" maxlength="30" pattern="[A-Za-z]{3,}" title="Three or more, non symbol or number, characters">
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Phone number</label>
+                                                                @if (Model != null && Model.PhoneNumber != null)
+                                                                {
+                                                                    <input class="form-control" type="text" name="PhoneNumber" placeholder="Phone Number" value="@Model.PhoneNumber" pattern="[+0-9][0-9]{8,11}" title="+370 or 86 type numbers with 12 or 9 length">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input class="form-control" type="text" name="PhoneNumber" placeholder="Phone Number" pattern="[+0-9][0-9]{8,11}" title="+370 or 86 type numbers with 12 or 9 length">
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-group">
+                                                                <label>Address</label>
+                                                                @if (Model != null && Model.Address != null)
+                                                                {
+                                                                    <input class="form-control" type="text" name="Address" placeholder="Address" value="@Model.Address" maxlength="40" pattern="^[a-z\d\.]{,40}$" title="No special characters allowed">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input class="form-control" type="text" name="Address" placeholder="Address" maxlength="40" pattern="^[a-z\d\.]{,40}$" title="No special characters allowed">
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col col-sm-3">
+                                                            <label>City</label>
+
+                                                            <div class="form-label-group">
+                                                                <select required id="inputCountry" class="form-control" name="fkcountryid">
+                                                                    <option value="" selected>Cities</option>
+                                                                    @foreach (var city in ViewBag.Countries)
+                                                                    {
+                                                                        if (city.Id == Model.FkCountryId)
+                                                                        {
+                                                                            <option selected value="@city.Id">@city.Name</option>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <option value="@city.Id">@city.Name</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex justify-content-end">
+                                                            @*<button class="btn btn-primary" type="submit">Save Changes</button>*@
+                                                            <input class="btn btn-primary" type="submit" value="Save Changes" onclick="MessageFunction()" formaction="@Url.Action("UpdateUser")" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <!--user's new password-->
+                                            <form>
+
+                                                <div class="collapse" id="multiCollapseExample2" data-parent="#myGroup">
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-6 mb-3">
+                                                            <div class="mb-2"><b>Change Password</b></div>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="form-group">
+                                                                        <label>Current Password</label>
+                                                                        <input hidden name="email" value="@Model.Email">
+                                                                        <input required class="form-control" type="password" name="password">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="form-group">
+                                                                        <label>New Password</label>
+                                                                        <input required id="newpassword" class="form-control" type="password" name="newpassword" onkeyup='check();'>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="form-group">
+                                                                        <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
+                                                                        <input required id="reenterpassword" class="form-control" type="password" name="reenterPassword" onkeyup='check();'>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                            <span id='message'></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex justify-content-end">
+                                                            @*<button class="btn btn-primary" type="submit">Save Changes</button>*@
+                                                            <input class="btn btn-primary" type="submit" value="Save Changes" onclick="MessageFunction()" formaction="@Url.Action("UpdatePassword")" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <!--user's new username-->
+                                            <form onsubmit="updateUsername()">
+                                                <div class="collapse" id="multiCollapseExample3" data-parent="#myGroup">
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-6 mb-3">
+                                                            <div class="mb-2"><b>Change Username</b></div>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="form-group">
+                                                                        <input required id="newusername" class="form-control" type="text" name="username" placeholder="Username" value="@Model.Username" maxlength="20" pattern="[A-Za-z0-9]{6,}" title="Six or more, non symbol or number, characters">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex justify-content-end">
+                                                            @*<button class="btn btn-primary" type="submit">Save Changes</button>*@
+                                                            <input class="btn btn-primary" type="submit" value="Save Changes" onclick="MessageFunction()" formaction="@Url.Action("UpdateUsername")" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <!--user's new email-->
+                                            <form>
+
+                                                <div class="collapse" id="multiCollapseExample4" data-parent="#myGroup">
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-6 mb-3">
+                                                            <div class="mb-2"><b>Change E-Mail</b></div>
+
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <div class="form-group">
+                                                                        <input class="form-control" type="email" name="email" placeholder="Email address" value="@Model.Email" maxlength="30">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col d-flex justify-content-end">
+                                                            @*<button class="btn btn-primary" type="submit">Save Changes</button>*@
+                                                            <input class="btn btn-primary" type="submit" value="Save Changes" onclick="MessageFunction()" formaction="@Url.Action("UpdateEmail")" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var check = function () {
+            if (document.getElementById('newpassword').value ==
+                document.getElementById('reenterpassword').value) {
+                document.getElementById('message').style.color = 'green';
+                document.getElementById('message').innerHTML = 'matching';
+            } else {
+                document.getElementById('message').style.color = 'red';
+                document.getElementById('message').innerHTML = 'not matching';
+            }
+        }
+    </script>
+</body>
+</html>

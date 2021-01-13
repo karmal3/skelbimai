@@ -1,0 +1,122 @@
+﻿
+@{
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="~/css/login.css">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="~/css/Error.css">
+    <script>
+        window.onload = function () {
+            if (sessionStorage.getItem('show')) {
+                document.getElementById('passwordReset').hidden = false;
+                sessionStorage.removeItem('show');
+            }
+
+            if (sessionStorage.getItem('showError')) {
+                document.getElementById('loginError').hidden = false;
+                sessionStorage.removeItem('showError');
+            }
+        }
+        function messageFunction() {
+            sessionStorage.setItem('show', true);
+        }
+        function loginFunction() {
+            sessionStorage.setItem('showError', true);
+        }
+    </script>
+</head>
+<body>
+    <div hidden id="passwordReset" class="alert alert-success" role="alert" style="box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 1); background-color:transparent; border:hidden;">
+        <h4 class="alert-heading">Well done!</h4>
+        <p>If your entered email exists, you should soon receive your new password in you email.</p>
+        <p class="mb-0">You might need to wait up to 5 minutes for email to arrive.</p>
+    </div>
+    <!------------------------------------ERROR MESSAGE--------------------------------------------->
+    <div hidden id="loginError">
+        <div class="d-flex justify-content-center" >
+
+            <div class="row">
+                <div class="col">
+                    <div class="msg msg-danger text-center">@TempData["Message"]</div>
+                </div>
+            </div>
+        </div>
+    </div
+><!------------------------------------ERROR MESSAGE--------------------------------------------->
+    <!-------------------------------------------------->
+    <div class="container ">
+        <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <div class="card card-signin my-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Sign In</h5>
+                        <form class="form-signin">
+                            <div class="form-label-group">
+                                <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email address" required autofocus>
+                                <label for="inputEmail">Email address</label>
+                            </div>
+
+                            <div class="form-label-group">
+                                <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
+                                <label for="inputPassword">Password</label>
+                            </div>
+
+                            <div class="custom-control custom-checkbox mb-3">
+                                <input type="checkbox" class="custom-control-input" id="customCheck1">
+                                <label class="custom-control-label" for="customCheck1">Remember password</label>
+                            </div>
+                            <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" formaction="@Url.Action("LoginUser")" onclick="loginFunction()">Sign in</button>
+                            <!---------------------------------------Forgot my password------------------------------------------------------------------------>
+                            <div class="container">
+                                <a href="#" data-target="#pwdModal" data-toggle="modal">Forgot my password</a>
+                            </div>
+                            <!--modal-->
+                            <!---------------------------------------Forgot my password-------------------------------------------------------------------------------------->
+                        </form>
+                        <form>
+                            <div id="pwdModal" class="modal fade position-absolute" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="col-md-12">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body">
+                                                        <div class="text-center">
+
+                                                            <p>If you have forgotten your password you can reset it here.</p>
+                                                            <div class="panel-body">
+                                                                <fieldset>
+                                                                    <div class="form-group">
+                                                                        <input class="form-control" placeholder="E-mail Address" name="email" type="email">
+                                                                    </div>
+                                                                    <input class="btn btn-lg btn-primary btn-block" type="submit" value="Send" formaction="@Url.Action("ResetPassword")" onclick="messageFunction()" />
+                                                                </fieldset>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
